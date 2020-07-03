@@ -14,28 +14,26 @@ const render = require("./lib/htmlRenderer");
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
-// 
+// Create array to push employees into
 
 const employees = [];
+// Inquirer function to get user input
 function makeEmployee(){
     inquirer.prompt([
         {
             type: "input",
             message: "Enter Employee's name: ",
-            name: "name",
-            default: "Steve Morris"
+            name: "name"
         },
         {
             type: "input",
             message: "Enter Employee's Id Number: ",
-            name: "id",
-            default: "1234"
+            name: "id"
         },
         {
             type: "input",
             message: "Enter Employee's Email: ",
-            name: "email",
-            default: "r3steve@gmail.com"
+            name: "email"
         },
         {
             type: "list",
@@ -48,17 +46,16 @@ function makeEmployee(){
             name: "role"
         }
     ]).then(function (empdata){
-        console.log(empdata.role);
+        // Get role from empdata
         const addRole = empdata.role;
         let addQuestions = [];
+        // Collect additional info based upon Role type
         if(addRole === "Intern"){
-            
             addQuestions = [
                 {
                     type: "input",
                     message: "What school do you attend?",
-                    name: "school",
-                    default: "KSU"
+                    name: "school"
                 }
             ]
         }else if(addRole === "Engineer"){
@@ -66,8 +63,7 @@ function makeEmployee(){
                 {
                     type: "input",
                     message: "What is you Github username?",
-                    name: "github",
-                    default: "steveamorris"
+                    name: "github"
                 }
             ]
         }else{
@@ -75,17 +71,13 @@ function makeEmployee(){
                 {
                    type: "input",
                    message: "What is you Office Number?",
-                   name: "officeNumber",
-                   default: "678-555-1234"
+                   name: "officeNumber"
                }
            ]
         };
-    
+        // Pass addQuestion into new inquirer prompt to get additional info based upon Role
         inquirer.prompt(addQuestions).then(function(addInfo){
-            console.log(empdata);
-            console.log(addInfo);
-            // combine relevant data to create employee
-            // push to employees array
+            // combine relevant data to create employee   
             let employee = {};
             if(empdata.role === "Intern"){
                 employee = new Intern(empdata.name, empdata.id, empdata.email, addInfo.school);
@@ -94,9 +86,10 @@ function makeEmployee(){
             }else{
                 employee = new Manager(empdata.name, empdata.id, empdata.email, addInfo.officeNumber);
             };
+            // push to employees array
             employees.push(employee);
 
-
+            // Check to see if the user wants to add another employee, if Yes, then rerun makeEmplyee, if not create the HTML File
             inquirer.prompt([
                 {
                     type: "confirm",
@@ -106,43 +99,21 @@ function makeEmployee(){
             ]).then(function(moreEntries){
                 if (moreEntries.anotherEntry){
                     makeEmployee();
-
                 }else{
-                    console.log(employees);
-                    makeHtml();
-                }
+                    const makeHTML = render(employees);
+                    fs.writeFile(outputPath, makeHTML, (err) =>{
+                        if(err){
+                            console.log(err);
+                        }else{
+                            console.log("It worked!")
+                        };
+                    });
+                };
             });
         });
     
     });
-
-
 };
-const temp = [
-    {
-      name: 'Steve Morris',
-      id: '1234',
-      email: 'r3steve@gmail.com',
-      school: 'KSU'
-    },
-    {
-      name: 'Steve Morris',
-      id: '1234',
-      email: 'r3steve@gmail.com',
-      github: 'steveamorris'
-    },
-    {
-      name: 'Steve Morris',
-      id: '1234',
-      email: 'r3steve@gmail.com',
-      officeNumber: '678-555-1234'
-    }
-  ];
-function makeHtml(){
-    render(employees);
-};
-// makeHtml();
-
 
 
 makeEmployee();
