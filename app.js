@@ -14,6 +14,13 @@ const render = require("./lib/htmlRenderer");
 // Write code to use inquirer to gather information about the development team members,
 // and to create objects for each team member (using the correct classes as blueprints!)
 
+// Refactoring Ideas
+    // Check to see if employee id already exists
+            // Create Number Range for ID and set it.
+    // Validate email and phone number format
+    // Change if statements to Switch/Case (started out trying that way, but forgot to break after the case)
+    // Break up functionality into separate functions
+
 // Create array to push employees into
 
 const employees = [];
@@ -100,12 +107,14 @@ function makeEmployee(){
                 if (moreEntries.anotherEntry){
                     makeEmployee();
                 }else{
+                    // Pass render results into variable
                     const makeHTML = render(employees);
+                    // write the file out to output dir
                     fs.writeFile(outputPath, makeHTML, (err) =>{
                         if(err){
                             console.log(err);
                         }else{
-                            console.log("It worked!")
+                            console.log("Employees added")
                         };
                     });
                 };
